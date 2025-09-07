@@ -75,40 +75,30 @@ def algoritmoGenetico(distanciaCidades, populacao = 200, geracoes = 500, probCro
         custos_populacao.append(custos_geracao)
     return melhor_caminho, melhor_custo, historico_melhores, custos_populacao
 
+def gera_matriz_distancias(n, min_dist=1, max_dist=100, seed=None):
+    if seed is not None:
+        np.random.seed(seed)
+    matriz = np.random.randint(min_dist, max_dist+1, size=(n, n))
+    matriz = (matriz + matriz.T) // 2 
+    np.fill_diagonal(matriz, 0)
+    return matriz
+
 if __name__ == "__main__":
-    distanciaCidades = np.array([
-    [0, 12, 19, 23, 31, 18, 21, 17, 25, 14, 28, 22, 16, 27, 20, 24, 26, 15, 29, 18],
-    [12, 0, 15, 28, 14, 26, 13, 22, 30, 19, 17, 21, 23, 25, 18, 20, 27, 16, 24, 29],
-    [19, 15, 0, 16, 27, 24, 20, 25, 18, 22, 21, 19, 28, 17, 23, 26, 14, 29, 20, 21],
-    [23, 28, 16, 0, 22, 17, 29, 24, 15, 27, 18, 20, 25, 21, 19, 30, 16, 23, 28, 24],
-    [31, 14, 27, 22, 0, 13, 18, 16, 29, 20, 15, 17, 21, 24, 22, 19, 25, 28, 14, 23],
-    [18, 26, 24, 17, 13, 0, 11, 20, 15, 22, 19, 14, 16, 18, 21, 23, 17, 25, 20, 27],
-    [21, 13, 20, 29, 18, 11, 0, 12, 23, 17, 16, 19, 14, 20, 18, 15, 22, 21, 24, 16],
-    [17, 22, 25, 24, 16, 20, 12, 0, 19, 14, 21, 18, 23, 15, 17, 20, 13, 16, 22, 25],
-    [25, 30, 18, 15, 29, 15, 23, 19, 0, 21, 24, 17, 20, 22, 16, 18, 27, 14, 19, 20],
-    [14, 19, 22, 27, 20, 22, 17, 14, 21, 0, 13, 16, 18, 15, 19, 23, 20, 25, 17, 21],
-    [28, 17, 21, 18, 15, 19, 16, 21, 24, 13, 0, 22, 20, 18, 23, 17, 14, 19, 25, 16],
-    [22, 21, 19, 20, 17, 14, 19, 18, 17, 16, 22, 0, 15, 20, 18, 21, 23, 17, 14, 19],
-    [16, 23, 28, 25, 21, 16, 14, 23, 20, 18, 20, 15, 0, 19, 17, 22, 21, 24, 18, 20],
-    [27, 25, 17, 21, 24, 18, 20, 15, 22, 15, 18, 20, 19, 0, 21, 17, 23, 16, 20, 22],
-    [20, 18, 23, 19, 22, 21, 18, 17, 16, 19, 23, 18, 17, 21, 0, 15, 20, 22, 19, 16],
-    [24, 20, 26, 30, 19, 23, 15, 20, 18, 23, 17, 21, 22, 17, 15, 0, 14, 19, 21, 18],
-    [26, 27, 14, 16, 25, 17, 22, 13, 27, 20, 14, 23, 21, 23, 20, 14, 0, 18, 15, 19],
-    [15, 16, 29, 23, 28, 25, 21, 16, 14, 25, 19, 17, 24, 16, 22, 19, 18, 0, 21, 20],
-    [29, 24, 20, 28, 14, 20, 24, 22, 19, 17, 25, 14, 18, 20, 19, 21, 15, 21, 0, 23],
-    [18, 29, 21, 24, 23, 27, 16, 25, 20, 21, 16, 19, 20, 22, 16, 18, 19, 20, 23, 0]
-])
+    distanciaCidades = gera_matriz_distancias(100)
     melhor_caminho, melhor_custo, historico, custos_populacao = algoritmoGenetico(distanciaCidades)
-    print("Melhor caminho:", melhor_caminho)
-    print("Custo do melhor caminho:", melhor_custo)
     for geracao, (caminho, custo) in enumerate(historico):
         print(f"Geração {geracao}: Caminho {caminho} com custo {custo}")
+    print("Melhor caminho:", melhor_caminho)
+    print("Custo do melhor caminho:", melhor_custo)
 
-    # Plotagem do custo médio por geração
     media_por_geracao = [sum(custos)/len(custos) for custos in custos_populacao]
-    plt.plot(range(len(media_por_geracao)), media_por_geracao, marker='o')
+    menor_por_geracao = [min(custos) for custos in custos_populacao]
+
+    plt.plot(media_por_geracao, label='Custo médio')
+    plt.plot(menor_por_geracao, label='Menor custo')
     plt.xlabel('Geração')
-    plt.ylabel('Custo médio da população')
-    plt.title('Custo médio por geração')
+    plt.ylabel('Custo')
+    plt.title('Custo médio e menor custo por geração')
+    plt.legend()
     plt.grid(True)
     plt.show()
