@@ -46,6 +46,7 @@ def algoritmoGenetico(distanciaCidades, populacao = 200, geracoes = 500, probCro
     custos_populacao = []
     for geracao in range(geracoes):
         custos = [custoCaminho(ind) for ind in populacao_atual]
+        custos_populacao.append(custos)
         maxCusto = max(custos)
         minCusto = min(custos)
         populacao_atual.sort(key=lambda ind: fitness(ind, maxCusto, minCusto), reverse=True)
@@ -71,8 +72,6 @@ def algoritmoGenetico(distanciaCidades, populacao = 200, geracoes = 500, probCro
                     individuo = mutacao(individuo)
                 selecionados.append(individuo)
         populacao_atual = selecionados
-        custos_geracao = [custoCaminho(ind) for ind in populacao_atual]
-        custos_populacao.append(custos_geracao)
     return melhor_caminho, melhor_custo, historico_melhores, custos_populacao
 
 def gera_matriz_distancias(n, min_dist=1, max_dist=100, seed=None):
